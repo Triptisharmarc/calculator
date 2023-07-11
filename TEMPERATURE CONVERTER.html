@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Temperature Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ceb2d0;
+      margin: 0;
+      padding: 20px;
+      font-size: large;
+      color: rebeccapurple;
+    }
+
+    h1 {
+          text-align: center;
+          margin-bottom: 20px;
+          text-decoration:underline;
+    }
+
+   .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background-color: #eec9c9;
+      padding: 60px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #4a025d; 
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+    .result {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Temperature Converter</h1>
+    
+    <div class="form-group">
+      <label for="celsius">Celsius:</label>
+      <input type="number" id="celsius" placeholder=" temperature in Celsius" step="0.01">
+    </div>
+    
+    <div class="form-group">
+      <label for="fahrenheit">Fahrenheit:</label>
+      <input type="number" id="fahrenheit" placeholder=" temperature in Fahrenheit" step="0.01">
+    </div>
+    
+    <div class="form-group">
+      <label for="kelvin">Kelvin:</label>
+      <input type="number" id="kelvin" placeholder=" temperature in Kelvin" step="0.01">
+    </div>
+    
+    <button class="button" onclick="convertTemperature()">Convert</button>
+    
+    <div class="result" id="result"></div>
+  </div>
+  
+  <script>
+    function convertTemperature() {
+      var celsiusInput = document.getElementById("celsius");
+      var fahrenheitInput = document.getElementById("fahrenheit");
+      var kelvinInput = document.getElementById("kelvin");
+      var resultDiv = document.getElementById("result");
+      
+      var celsius = parseFloat(celsiusInput.value);
+      var fahrenheit = parseFloat(fahrenheitInput.value);
+      var kelvin = parseFloat(kelvinInput.value);
+      
+      if (!isNaN(celsius)) {
+        fahrenheitInput.value = celsius * 9/5 + 32;
+        kelvinInput.value = celsius + 273.15;
+        resultDiv.innerHTML = "";
+      } else if (!isNaN(fahrenheit)) {
+        celsiusInput.value = (fahrenheit - 32) * 5/9;
+        kelvinInput.value = (fahrenheit + 459.67) * 5/9;
+        resultDiv.innerHTML = "";
+      } else if (!isNaN(kelvin)) {
+        celsiusInput.value = kelvin - 273.15;
+        fahrenheitInput.value = kelvin * 9/5 - 459.67;
+        resultDiv.innerHTML = "";
+      } else {
+        resultDiv.innerHTML = "Please enter a valid temperature.";
+      }
+    }
+  </script>
+</body>
+</html>
