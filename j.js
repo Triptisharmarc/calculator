@@ -1,68 +1,127 @@
 const display = document.getElementById('display');
-const buttons = document.querySelectorAll('.button');
-let firstOperand = '';
-let secondOperand = '';
-let operator = '';
-let calculationHistory = [];
+const numbs = document.querySelectorAll('[id*=key]');
+const operators = document.querySelectorAll('[id*=operator]');
 
-function handleClick(event) {
-  const button = event.target;
-  const value = button.dataset.value;
+let newNumb = true;
+let operator;
+let lastNumb;
 
-  if (button.classList.contains('number')) {
-    const currentDisplay = display.textContent;
-    if (operator !== '') {
-      secondOperand += value;
-    } else {
-      firstOperand += value;
+const pendentOperation = () => operator !== undefined
+
+const calculate = () => {
+    if(pendentOperation()){
+        const actualNumb = parseFloat(display.textContent.replace('.','.'));
+        newNumb = true;
+        const result = eval(`${lastNumb}${operator}${actualNumb}`);
+        updateDisplay(result);
     }
-    display.textContent = currentDisplay + value;
-  } else if (button.classList.contains('operator')) {
-    operator = value;
-    calculationHistory.push(firstOperand);
-    calculationHistory.push(operator);
-    firstOperand = '';
-  } else if (button.classList.contains('clear')) {
-    firstOperand = '';
-    secondOperand = '';
-    operator = '';
-    display.textContent = '';
-    calculationHistory = [];
-  } else if (button.id === 'equal') {
-    calculationHistory.push(secondOperand);
-    try {
-      const result = calculate(firstOperand, secondOperand, operator);
-      display.textContent = result;
-      calculationHistory.push('=');
-      calculationHistory.push(result);
-      firstOperand = result;
-      secondOperand = '';
-      operator = '';
-    } catch (error) {
-      display.textContent = error.message;
-    }
-  }
 }
 
-buttons.forEach(button => button.addEventListener('click', handleClick));
+const updateDisplay = (text) => {
+    if(newNumb) {
+        display.textContent = text.toLocaleString('BR'); 
+        newNumb = false;
+    }else {
+        display.textContent += text;
+    }
 
-function calculate(firstOperand, secondOperand, operator) {
-  const firstNumber = parseFloat(firstOperand);
-  const secondNumber = parseFloat(secondOperand);
+};
 
-  switch (operator) {
-    case '+':
-      return firstNumber + secondNumber;
-    case '-':
-      return firstNumber - secondNumber;
-    case '*':
-      return firstNumber * secondNumber;
-    case '/':
-      if (secondNumber === 0) {
-        throw new Error('Cannot divide by zero');
-      }
-      return firstNumber / secondNumber;
-    default:
-      throw new Error('Invalid operator');
-  }
+const insertNumb = (event) => {
+    updateDisplay(event.target.textContent)
+};
+
+numbs.forEach(numb => 
+    numb.addEventListener('click', insertNumb)
+);
+
+const selectOperator = (event) => {
+    if(!newNumb){
+        calculate();
+        newNumb = true;
+        operator = event.target.textContent;
+        lastNumb = parseFloat(display.textContent.replace('.','.'));
+        console.log(operator);
+    }
 }
+
+operators.forEach(operator => 
+    operator.addEventListener('click', selectOperator)
+);
+
+const activateIqual = () => {
+    calculate();
+    operator = undefined;
+
+}
+
+document.getElementById('iqual').addEventListener('click', activateIqual);
+
+const clearDisplay = () => display.textContent = '';
+document.getElementById('clearDisplay').addEventListener('click', clearDisplay);
+
+const clearCalc = () => {
+    clearDisplay();
+    operator = undefined;
+    newNumb = true;
+    lastNumb = undefined;
+}
+document.getElementById('clearCalc').addEventListener('click', clearCalc);
+
+const removeLast = () => {
+    display.textContent = display.textContent.slice(0, -1);
+};
+document.getElementById('backspace').addEventListener('click', removeLast);
+
+const invertSignal = () => {
+    newNumb = true
+    updateDisplay(display.textContent * -1)
+};
+document.getElementById('invert').addEventListener('click', invertSignal);
+
+const existDecimal = () => display.textContent.indexOf('.') !== -1;
+const existValor = () => display.textContent.length > 0;
+const insertDecimal = () => {
+    if(!existDecimal()){
+        if (existValor()){
+            updateDisplay('.');
+        }else{
+            updateDisplay('0.');
+        }
+    }
+}
+document.getElementById('decimal').addEventListener('click', insertDecimal);
+
+const keyMap = {
+    '0'        : 'key0',
+    '1'        : 'key1',
+    '2'        : 'key2',
+    '3'        : 'key3',
+    '4'        : 'key4',
+    '5'        : 'key5',
+    '6'        : 'key6',
+    '7'        : 'key7',
+    '8'        : 'key8',
+    '9'        : 'key9',
+    '+'        : 'operatorPlus',
+    '-'        : 'operatorMinus',
+    '*'        : 'operatorMult',
+    '/'        : 'operatorDivision',
+    '='        : 'iqual',
+    'Enter'    : 'iqual',
+    'Backspace': 'backspace',
+    'c'        : 'clearCalc',
+    'Escape'   : 'clearDisplay',
+    '.'        : 'decimal'
+}
+
+const keyMaping = (event) => {
+    const key = event.key;
+
+    const permitedKey = () => Object.keys(keyMap).indexOf(key) !== -1;
+
+    if(permitedKey()){
+        document.getElementById(keyMap[key]).click();
+    }
+}
+document.addEventListener('keydown', keyMaping);
